@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "../../navigation/types";
 import { useSessao } from "../../context/SessaoContext";
-import { healthCheck } from "../../services/api";
+import { useConexao } from "../../context/ConexaoContext";
 import { Botao } from "../../components";
 import { inicioStyles as styles } from "../../styles/auth.styles";
 import { cores } from "../../styles/theme";
@@ -14,11 +14,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Inicio">;
 
 export default function InicioScreen({ navigation }: Props) {
   const { entrarComoVisitante } = useSessao();
-  const [online, setOnline] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    healthCheck().then(setOnline);
-  }, []);
+  const { online } = useConexao();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

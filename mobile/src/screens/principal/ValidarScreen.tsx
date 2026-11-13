@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList, TabParamList } from "../../navigation/types";
 import { useSessao } from "../../context/SessaoContext";
+import { useRecarregarAoReconectar } from "../../context/ConexaoContext";
 import { Evento } from "../../interfaces/evento";
 import { listarPendentes, validarEvento } from "../../services/eventoService";
 import { mensagemErroApi } from "../../utils/apiErro";
@@ -38,6 +39,7 @@ export default function ValidarScreen({ navigation }: Props) {
   }, []);
 
   useFocusEffect(useCallback(() => { carregar(); }, [carregar]));
+  useRecarregarAoReconectar(carregar);
 
   async function decidir(evento: Evento, tipo: "CONFIRMAR" | "CONTESTAR") {
     if (!usuario) return;
@@ -61,7 +63,7 @@ export default function ValidarScreen({ navigation }: Props) {
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.lista}
-      data={carregando || erro ? [] : pendentes}
+      data={pendentes}
       keyExtractor={(e) => String(e.id)}
       onRefresh={carregar}
       refreshing={false}
@@ -75,7 +77,7 @@ export default function ValidarScreen({ navigation }: Props) {
         </View>
       }
       ListEmptyComponent={
-        <EstadoTela carregando={carregando} erro={erro} vazio="Nenhum relato aguardando validação." onTentarNovamente={carregar} />
+        <EstadoTela carregando={carregando} erro={pendentes.length === 0 ? erro : null} vazio="Nenhum relato aguardando validação." onTentarNovamente={carregar} />
       }
       renderItem={({ item }) => (
         <AlertaCard evento={item} onPress={() => navigation.navigate("EventoDetalhe", { eventoId: item.id })}>

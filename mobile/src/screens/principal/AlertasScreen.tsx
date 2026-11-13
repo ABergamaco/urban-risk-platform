@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList, TabParamList } from "../../navigation/types";
 import { useSessao } from "../../context/SessaoContext";
+import { useRecarregarAoReconectar } from "../../context/ConexaoContext";
 import { Evento } from "../../interfaces/evento";
 import { TipoRisco } from "../../types/tipoRisco";
 import { listarAlertas } from "../../services/alertaService";
@@ -62,10 +63,15 @@ export default function AlertasScreen({ navigation, route }: Props) {
     }, [carregar])
   );
 
+  useRecarregarAoReconectar(carregar);
+
+  // Sem conexão: continua mostrando a última lista recebida (só mostra erro se nunca carregou)
+  const semDados = alertas.length === 0;
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={erro || carregando ? [] : alertas}
+        data={alertas}
         keyExtractor={(e) => String(e.id)}
         contentContainerStyle={styles.lista}
         refreshing={atualizando}
@@ -104,9 +110,11 @@ export default function AlertasScreen({ navigation, route }: Props) {
                 ]}
               />
             )}
-            {!carregando && !erro && (
+            {!carregando && !semDados && (
               <Text style={styles.resumo} accessibilityLiveRegion="polite">
-                {alertas.length} alerta(s) · ordenados do mais para o menos prioritário
+                {erro
+                  ? `⚠ Sem conexão · mostrando os últimos ${alertas.length} alerta(s) recebidos`
+                  : `${alertas.length} alerta(s) · ordenados do mais para o menos prioritário`}
               </Text>
             )}
           </View>
@@ -114,7 +122,7 @@ export default function AlertasScreen({ navigation, route }: Props) {
         ListEmptyComponent={
           <EstadoTela
             carregando={carregando}
-            erro={erro}
+            erro={semDados ? erro : null}
             vazio="Nenhum alerta ativo com esses filtros."
             onTentarNovamente={carregar}
           />

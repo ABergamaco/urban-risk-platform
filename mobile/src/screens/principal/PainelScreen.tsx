@@ -7,6 +7,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList, TabParamList } from "../../navigation/types";
 import { useSessao } from "../../context/SessaoContext";
+import { useRecarregarAoReconectar } from "../../context/ConexaoContext";
 import { Painel, FonteStatus, RegiaoResumo } from "../../interfaces/painel";
 import { buscarPainel } from "../../services/painelService";
 import { mensagemErroApi } from "../../utils/apiErro";
@@ -66,6 +67,9 @@ export default function PainelScreen({ navigation }: Props) {
     }, [carregar])
   );
 
+  // Backend voltou: recarrega na hora
+  useRecarregarAoReconectar(carregar);
+
   if (carregando || (!painel && erro)) {
     return <EstadoTela carregando={carregando} erro={erro} onTentarNovamente={carregar} />;
   }
@@ -85,7 +89,7 @@ export default function PainelScreen({ navigation }: Props) {
           {usuario ? `Olá, ${usuario.nome.split(" ")[0]}` : "Situação da cidade"}
         </Text>
         <Text style={styles.atualizado}>
-          {erro ? "⚠ Sem conexão — mostrando últimos dados" : `Atualizado ${tempoRelativo(painel.geradoEm)} · ${painel.alertasAtivos} alertas ativos`}
+          {erro ? `⚠ Sem conexão · mostrando dados de ${tempoRelativo(painel.geradoEm)}` : `Atualizado ${tempoRelativo(painel.geradoEm)} · ${painel.alertasAtivos} alertas ativos`}
         </Text>
       </View>
 

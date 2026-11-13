@@ -93,7 +93,16 @@ Endereço do backend em `src/services/api.ts`:
 
 No navegador, aceite a permissão de notificações quando ela for pedida. Se recusar, o banner continua funcionando.
 
-## 6. Mapa no navegador e no celular
+## 6. Quando o backend cai (resiliência)
+
+Arquivos: `src/context/ConexaoContext.tsx` e `src/components/FaixaConexao.tsx`.
+
+- O app verifica `GET /health` a cada 5 s, e a cada 3 s quando está offline, para reconectar rápido. Além disso, **qualquer requisição que falhe por rede** marca offline na hora, via interceptor do axios em `services/api.ts`.
+- Offline, aparece em qualquer tela a faixa vermelha **"Sem conexão com o servidor"**, com o número da tentativa, o tempo offline e o botão **"Tentar agora"**.
+- As telas **mantêm os últimos dados recebidos** em vez de ficarem vazias. As requisições têm timeout de 8 s, então nada fica "preso".
+- Quando o backend volta, aparece a faixa verde **"Conexão restabelecida"** e **todas as telas recarregam sozinhas** (`useRecarregarAoReconectar`). Alertas graves que surgiram durante a queda são notificados na volta, porque o monitor continua de onde parou.
+
+## 7. Mapa no navegador e no celular
 
 O `react-native-maps` não funciona na web. Por isso existem dois arquivos com o mesmo nome:
 
@@ -102,7 +111,7 @@ O `react-native-maps` não funciona na web. Por isso existem dois arquivos com o
 
 O Metro escolhe o arquivo certo sozinho, e o resto do app importa só `MapaScreen`. Os dados vêm do mesmo hook, `hooks/useDadosMapa.ts`.
 
-## 7. Estrutura do projeto
+## 8. Estrutura do projeto
 
 Segue o padrão usado nas aulas:
 
@@ -120,10 +129,11 @@ src/
   utils/                     → formatação, erros da API, helpers do mapa
 ```
 
-## 8. Roteiro de demonstração
+## 9. Roteiro de demonstração
 
 1. Entre como `morador@demo.com`. O painel mostra o alerta vermelho do **Jardim Pantanal** (sensor de nível da água).
 2. Vá em **Perfil → Modo demonstração**, escolha *Sé + Alagamento* e toque em **Simular evento**. Em até 15 s chegam o **banner** e a **notificação**.
 3. Na aba **Relatar**, envie um alagamento na Sé. A confiança inicial do relato já é 50%, porque o sensor da Sé confirma o mesmo risco.
 4. Abra o alerta e veja **como a confiança foi calculada**.
 5. Saia e entre como `agente@demo.com`. Na aba **Validar**, valide um relato (+40 de confiança, e os moradores são notificados) ou descarte.
+6. **Pare o backend** (Ctrl+C no terminal dele). A faixa "Sem conexão" aparece e o app continua navegável com os últimos dados. **Suba o backend de novo**: aparece "Conexão restabelecida" e tudo se atualiza.

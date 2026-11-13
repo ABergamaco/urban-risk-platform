@@ -7,14 +7,20 @@
  *
  * As telas mudam automaticamente quando o usuário entra ou sai
  * (padrão "auth flow" do React Navigation).
+ *
+ * ConexaoProvider monitora o backend: se ele parar, a FaixaConexao avisa,
+ * as telas mantêm os últimos dados e tudo recarrega sozinho quando ele volta.
  */
 import React from "react";
+import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "./src/navigation/types";
 import { SessaoProvider, useSessao } from "./src/context/SessaoContext";
+import { ConexaoProvider } from "./src/context/ConexaoContext";
+import { FaixaConexao } from "./src/components";
 import { cores } from "./src/styles/theme";
 
 import InicioScreen from "./src/screens/auth/InicioScreen";
@@ -55,11 +61,17 @@ function Rotas() {
 
 export default function App() {
   return (
-    <SessaoProvider>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Rotas />
-      </NavigationContainer>
-    </SessaoProvider>
+    <ConexaoProvider>
+      <SessaoProvider>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          <View style={{ flex: 1 }}>
+            <Rotas />
+            {/* Aviso de "sem conexão" por cima de qualquer tela */}
+            <FaixaConexao />
+          </View>
+        </NavigationContainer>
+      </SessaoProvider>
+    </ConexaoProvider>
   );
 }

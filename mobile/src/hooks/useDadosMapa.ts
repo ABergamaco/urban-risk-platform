@@ -7,6 +7,7 @@ import { listarAlertas } from "../services/alertaService";
 import { buscarPainel } from "../services/painelService";
 import { TipoRisco } from "../types/tipoRisco";
 import { mensagemErroApi } from "../utils/apiErro";
+import { useRecarregarAoReconectar } from "../context/ConexaoContext";
 
 /** Dados usados pelas duas versões do mapa (celular e web). */
 export function useDadosMapa(tipo: TipoRisco | "TODOS") {
@@ -38,6 +39,8 @@ export function useDadosMapa(tipo: TipoRisco | "TODOS") {
       return () => clearInterval(timer);
     }, [carregar])
   );
+
+  useRecarregarAoReconectar(carregar);
 
   return { alertas, regioes, erro, carregando, carregar };
 }

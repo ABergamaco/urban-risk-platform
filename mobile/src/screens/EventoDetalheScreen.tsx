@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList } from "../navigation/types";
 import { useSessao } from "../context/SessaoContext";
+import { useRecarregarAoReconectar } from "../context/ConexaoContext";
 import { Evento } from "../interfaces/evento";
 import { Leitura } from "../interfaces/leitura";
 import { buscarEvento, buscarLeiturasDoEvento, resolverEvento, validarEvento } from "../services/eventoService";
@@ -71,7 +72,10 @@ export default function EventoDetalheScreen({ route }: Props) {
 
   useEffect(() => {
     carregar();
+    const timer = setInterval(carregar, 15000); // mantém o detalhe atualizado (tendência, confiança)
+    return () => clearInterval(timer);
   }, [carregar]);
+  useRecarregarAoReconectar(carregar);
 
   async function acao(fn: () => Promise<Evento>, sucesso: string) {
     setEnviando(true);

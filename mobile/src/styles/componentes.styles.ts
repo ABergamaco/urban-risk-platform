@@ -168,3 +168,19 @@ export const estadoStyles = StyleSheet.create({
   mensagemSucesso: { backgroundColor: "#E8F5E9" },
   mensagemTexto: { flex: 1, fontSize: fonte.pequena, fontWeight: "600" },
 });
+
+export const faixaStyles = StyleSheet.create({
+  container: { position: "absolute", left: 12, right: 12, bottom: 84, alignItems: "center", zIndex: 200 },
+  faixa: {
+    width: "100%", maxWidth: 960, borderRadius: 14, padding: 12,
+    flexDirection: "row", alignItems: "center", gap: 12,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 10,
+  },
+  offline: { backgroundColor: "#B71C1C" },
+  online: { backgroundColor: "#1B5E20" },
+  textos: { flex: 1 },
+  titulo: { color: "#FFFFFF", fontWeight: "bold", fontSize: fonte.normal },
+  sub: { color: "#FFFFFF", fontSize: 13 },
+  botao: { minHeight: 44, paddingHorizontal: 14, borderRadius: 10, borderWidth: 2, borderColor: "#FFFFFF", justifyContent: "center" },
+  botaoTexto: { color: "#FFFFFF", fontWeight: "bold", fontSize: fonte.pequena },
+});

@@ -10,3 +10,4 @@ export { default as Mensagem } from "./Mensagem";
 export { default as Seletor } from "./Seletor";
 export { default as LegendaMapa } from "./LegendaMapa";
 export { default as FiltroMapa } from "./FiltroMapa";
+export { default as FaixaConexao } from "./FaixaConexao";

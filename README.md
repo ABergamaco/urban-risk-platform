@@ -66,6 +66,7 @@ npm run web                     # abre no navegador (http://localhost:8081)
 | Notificações de alerta | App: notificação do sistema + banner dentro do app |
 | Interface simples e acessível para moradores e agentes | App: perfis Morador e Agente local, contraste AA, leitor de tela |
 | Arquitetura em camadas, testes e README | `controller / service / repository / model` · testes JUnit · este README |
+| App sem travar com o backend parado e recuperação ao reconectar | `mobile/src/context/ConexaoContext.tsx` + faixa "Sem conexão / Conexão restabelecida" |
 | Proteção de dados pessoais | Relatos anônimos, localização aproximada, senha com hash |
 
 Mais detalhes em [`backend/README.md`](backend/README.md) e [`mobile/README.md`](mobile/README.md).

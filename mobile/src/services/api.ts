@@ -13,11 +13,32 @@ export const BASE_URL =
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 8000, // nunca deixa a tela "presa" esperando um servidor que caiu
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+// ===== Aviso de queda de conexão =====
+// Qualquer requisição que falhe por rede avisa o ConexaoContext na hora,
+// sem esperar a próxima verificação periódica.
+type Ouvinte = () => void;
+const ouvintesFalha = new Set<Ouvinte>();
+
+export function aoFalharRede(ouvinte: Ouvinte): () => void {
+  ouvintesFalha.add(ouvinte);
+  return () => ouvintesFalha.delete(ouvinte);
+}
+
+api.interceptors.response.use(
+  (resposta) => resposta,
+  (erro) => {
+    if (erro instanceof AxiosError && !erro.response) {
+      ouvintesFalha.forEach((o) => o());
+    }
+    return Promise.reject(erro);
+  }
+);
 
 export default api;
 
@@ -31,10 +52,16 @@ export function isNetworkError(error: unknown): boolean {
 
 /** GET /health com timeout curto, para mostrar se o servidor está no ar. */
 export async function healthCheck(): Promise<boolean> {
+  return (await medirConexao()) !== null;
+}
+
+/** GET /health medindo a latência. Retorna os milissegundos, ou null se o servidor não respondeu. */
+export async function medirConexao(): Promise<number | null> {
+  const inicio = Date.now();
   try {
     await axios.get(`${BASE_URL}/health`, { timeout: 3000 });
-    return true;
+    return Date.now() - inicio;
   } catch {
-    return false;
+    return null;
   }
 }
