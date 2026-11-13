@@ -1,0 +1,3 @@
+export type TipoRisco = "ALAGAMENTO" | "ILHA_DE_CALOR" | "INTERRUPCAO_SERVICO";
+
+export const TIPOS_RISCO: TipoRisco[] = ["ALAGAMENTO", "ILHA_DE_CALOR", "INTERRUPCAO_SERVICO"];

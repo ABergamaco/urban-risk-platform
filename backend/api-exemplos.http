@@ -1,0 +1,68 @@
+### Exemplos de requisições (VS Code: extensão "REST Client" | IntelliJ: HTTP Client)
+@base = http://localhost:8080
+
+### Saúde
+GET {{base}}/health
+
+### Painel de acompanhamento
+GET {{base}}/painel
+
+### Status das fontes de dados
+GET {{base}}/fontes
+
+### Alertas ativos ordenados por prioridade
+GET {{base}}/alertas
+
+### Só alagamentos com confiança >= 50
+GET {{base}}/alertas?tipo=ALAGAMENTO&confiancaMinima=50
+
+### Novos alertas (para notificações)
+GET {{base}}/alertas/novos?desde=2026-11-12T00:00:00
+
+### Histórico de eventos encerrados
+GET {{base}}/eventos?status=RESOLVIDO
+
+### Relatos aguardando agente
+GET {{base}}/eventos/pendentes
+
+### Login (morador de teste)
+POST {{base}}/usuarios/login
+Content-Type: application/json
+
+{ "email": "morador@demo.com", "senha": "123456" }
+
+### Cadastro de agente local
+POST {{base}}/usuarios
+Content-Type: application/json
+
+{ "nome": "Pedro Agente", "email": "pedro@defesacivil.sp.gov.br", "senha": "123456", "perfil": "AGENTE", "regiaoId": 2, "codigoAgente": "DEFESA2026" }
+
+### Relato comunitário
+POST {{base}}/relatos
+Content-Type: application/json
+
+{ "usuarioId": 1, "regiaoId": 2, "tipo": "ALAGAMENTO", "descricao": "Água subindo rápido na Praça da Sé, ônibus parados.", "severidade": "ALTA" }
+
+### Morador confirma um evento
+POST {{base}}/eventos/1/validacoes
+Content-Type: application/json
+
+{ "usuarioId": 2, "tipo": "CONFIRMAR" }
+
+### Agente resolve um evento
+PUT {{base}}/eventos/1/resolver
+Content-Type: application/json
+
+{ "usuarioId": 3, "observacao": "Equipe no local, água baixou." }
+
+### Sensor REAL enviando leitura
+POST {{base}}/leituras
+Content-Type: application/json
+
+{ "codigoSensor": "NV-LAP-01", "valor": 62.0 }
+
+### Demonstração: forçar alagamento crítico na Sé (regiaoId 2)
+POST {{base}}/simulador/eventos
+Content-Type: application/json
+
+{ "regiaoId": 2, "tipo": "ALAGAMENTO" }

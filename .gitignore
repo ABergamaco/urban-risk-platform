@@ -1,0 +1,11 @@
+# Segurança extra (cada stack também tem o seu .gitignore)
+node_modules/
+.expo/
+dist/
+web-build/
+target/
+backend/data/
+*.log
+.DS_Store
+.idea/
+.vscode/
