@@ -57,6 +57,13 @@ export const iconeNivel: Record<string, NomeIcone> = {
   ENCERRADO: "close-circle",
 };
 
+/** Seta e cor da análise de tendência. */
+export const tendenciaInfo: Record<string, { rotulo: string; icone: "trending-up" | "trending-down" | "remove" ; cor: string }> = {
+  SUBINDO: { rotulo: "Piorando", icone: "trending-up", cor: "#B71C1C" },
+  ESTAVEL: { rotulo: "Estável", icone: "remove", cor: "#455A64" },
+  DESCENDO: { rotulo: "Melhorando", icone: "trending-down", cor: "#1B5E20" },
+};
+
 export const rotuloConfianca: Record<string, string> = {
   ALTA: "Confiança alta",
   MEDIA: "Confiança média",

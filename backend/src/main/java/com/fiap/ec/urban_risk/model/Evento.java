@@ -98,6 +98,19 @@ public class Evento {
 
     private String observacaoAgente;
 
+    // ===== Análise de tendência (preenchido pelo TendenciaService) =====
+    /** SUBINDO | ESTAVEL | DESCENDO | SEM_DADOS (null = sem sensor na região) */
+    private String tendencia;
+    /** Variação por minuto calculada pela regressão linear (cm/min ou °C/min). */
+    private Double taxaVariacao;
+    /** Minutos previstos até atingir o próximo nível de gravidade. */
+    private Integer previsaoMinutos;
+    private String previsaoTexto;
+    /** Pontos somados/subtraídos da prioridade pela tendência (−5 a +10). */
+    private Integer ajusteTendencia = 0;
+    /** Já notificou que vai piorar em breve? (evita repetir) */
+    private Boolean alertaPreditivo = false;
+
     /** Maior gravidade já atingida. Evita notificar de novo quando o valor oscila perto do limite. */
     @JsonIgnore
     private Integer pesoMaximo;
@@ -127,7 +140,8 @@ public class Evento {
     @JsonProperty("prioridade")
     public double getPrioridade() {
         long minutos = Duration.between(escaladoEm, LocalDateTime.now()).toMinutes();
-        return CalculoRisco.prioridade(severidade.getPeso(), confianca, minutos);
+        return CalculoRisco.prioridade(severidade.getPeso(), confianca, minutos,
+                ajusteTendencia == null ? 0 : ajusteTendencia);
     }
 
     @JsonProperty("nivelAlerta")
@@ -180,6 +194,12 @@ public class Evento {
     public LocalDateTime getEncerradoEm() { return encerradoEm; }
     public String getObservacaoAgente() { return observacaoAgente; }
     public Integer getPesoMaximo() { return pesoMaximo; }
+    public String getTendencia() { return tendencia; }
+    public Double getTaxaVariacao() { return taxaVariacao; }
+    public Integer getPrevisaoMinutos() { return previsaoMinutos; }
+    public String getPrevisaoTexto() { return previsaoTexto; }
+    public Integer getAjusteTendencia() { return ajusteTendencia; }
+    public Boolean getAlertaPreditivo() { return alertaPreditivo; }
 
     public void setId(Long id) { this.id = id; }
     public void setTipo(TipoRisco tipo) { this.tipo = tipo; }
@@ -204,4 +224,10 @@ public class Evento {
     public void setEncerradoEm(LocalDateTime encerradoEm) { this.encerradoEm = encerradoEm; }
     public void setObservacaoAgente(String observacaoAgente) { this.observacaoAgente = observacaoAgente; }
     public void setPesoMaximo(Integer pesoMaximo) { this.pesoMaximo = pesoMaximo; }
+    public void setTendencia(String tendencia) { this.tendencia = tendencia; }
+    public void setTaxaVariacao(Double taxaVariacao) { this.taxaVariacao = taxaVariacao; }
+    public void setPrevisaoMinutos(Integer previsaoMinutos) { this.previsaoMinutos = previsaoMinutos; }
+    public void setPrevisaoTexto(String previsaoTexto) { this.previsaoTexto = previsaoTexto; }
+    public void setAjusteTendencia(Integer ajusteTendencia) { this.ajusteTendencia = ajusteTendencia; }
+    public void setAlertaPreditivo(Boolean alertaPreditivo) { this.alertaPreditivo = alertaPreditivo; }
 }

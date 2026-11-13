@@ -61,6 +61,15 @@ Content-Type: application/json
 
 { "codigoSensor": "NV-LAP-01", "valor": 62.0 }
 
+### Análise de tendência (regressão linear) por região
+GET {{base}}/analise/tendencias
+
+### Demonstração: água subindo aos poucos no Ipiranga (regiaoId 5) -> análise de tendência + alerta preditivo
+POST {{base}}/simulador/eventos
+Content-Type: application/json
+
+{ "regiaoId": 5, "tipo": "ALAGAMENTO", "modo": "GRADUAL" }
+
 ### Demonstração: forçar alagamento crítico na Sé (regiaoId 2)
 POST {{base}}/simulador/eventos
 Content-Type: application/json

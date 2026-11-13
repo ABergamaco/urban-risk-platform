@@ -23,6 +23,8 @@ package com.fiap.ec.urban_risk.service;
  *    prioridade = gravidade  (até 50 pontos: peso 1..4 / 4 * 50)
  *               + confiança  (até 35 pontos: confiança * 0,35)
  *               + recência   (até 15 pontos: cai até zero em 6 horas)
+ *               + tendência  (−5 a +10, calculado pela AnaliseTendencia)
+ *    (resultado limitado entre 0 e 100)
  *
  * 3) NÍVEL DO ALERTA, a partir da prioridade:
  *    >= 75 VERMELHO | >= 55 LARANJA | >= 35 AMARELO | abaixo INFORMATIVO
@@ -61,11 +63,17 @@ public final class CalculoRisco {
     // ======================== PRIORIDADE ========================
 
     public static double prioridade(int pesoSeveridade, int confianca, long minutosDesdeEscalada) {
+        return prioridade(pesoSeveridade, confianca, minutosDesdeEscalada, 0);
+    }
+
+    /** Versão com o ajuste da análise de tendência (−5 a +10). */
+    public static double prioridade(int pesoSeveridade, int confianca, long minutosDesdeEscalada,
+                                    int ajusteTendencia) {
         double gravidade = (pesoSeveridade / 4.0) * 50.0;
         double conf = confianca * 0.35;
         double minutos = Math.max(0, Math.min(minutosDesdeEscalada, JANELA_RECENCIA_MIN));
         double recencia = 15.0 * (1.0 - minutos / JANELA_RECENCIA_MIN);
-        double total = gravidade + conf + recencia;
+        double total = Math.max(0, Math.min(100, gravidade + conf + recencia + ajusteTendencia));
         return Math.round(total * 10.0) / 10.0; // 1 casa decimal
     }
 
@@ -108,6 +116,24 @@ public final class CalculoRisco {
     /** Fornecimento de energia: 1 = normal, 0 = sem energia. */
     public static int severidadeEnergia(double status) {
         return status < 0.5 ? 3 : 0;
+    }
+
+    /** Próximo limite ACIMA do valor atual: {valor, peso}. Retorna null se já está no nível máximo. */
+    public static double[] proximoLimite(String grandeza, double valorAtual) {
+        double[] limites = switch (grandeza) {
+            case "NIVEL_AGUA" -> new double[]{15, 30, 50, 80};
+            case "TEMPERATURA" -> new double[]{30, 32, 35, 38};
+            case "PRECIPITACAO" -> new double[]{5, 10, 25, 50};
+            default -> new double[]{};
+        };
+        for (int i = 0; i < limites.length; i++) {
+            if (valorAtual < limites[i]) return new double[]{limites[i], i + 1};
+        }
+        return null;
+    }
+
+    public static String nomeNivel(int peso) {
+        return new String[]{"NORMAL", "BAIXA", "MODERADA", "ALTA", "CRÍTICA"}[peso];
     }
 
     /** Limite usado nas mensagens, para o usuário entender o porquê do alerta. */

@@ -46,6 +46,7 @@ public class SimuladorSensores {
     private final Map<Long, Double> nivelAgua = new ConcurrentHashMap<>();
     private final Map<Long, Integer> ciclosSemEnergia = new ConcurrentHashMap<>();
     private final Map<Long, Integer> ciclosOndaDeCalor = new ConcurrentHashMap<>();
+    private final Map<Long, Integer> ciclosSubidaGradual = new ConcurrentHashMap<>();
 
     public SimuladorSensores(SensorRepository sensorRepository,
                              EventoRepository eventoRepository,
@@ -87,6 +88,15 @@ public class SimuladorSensores {
 
         double chuva = valorOuZero(openMeteoService.getChuvaMmHora(r.getId()));
         double alvo = (propensa ? 8.0 : 2.0) + chuva * (propensa ? 3.0 : 1.0);
+
+        int subida = ciclosSubidaGradual.getOrDefault(sensor.getId(), 0);
+        if (subida > 0) {
+            // Cenário de demonstração: chuva forte contínua, água sobe ~12 cm/min
+            ciclosSubidaGradual.put(sensor.getId(), subida - 1);
+            double v = Math.min(150, atual + aleatorio(2.5, 3.5));
+            nivelAgua.put(sensor.getId(), v);
+            return v;
+        }
 
         double novo = atual + (alvo - atual) * 0.02 + aleatorio(-1.5, 1.5);
         if (propensa && ThreadLocalRandom.current().nextDouble() < 0.004) {
@@ -131,6 +141,11 @@ public class SimuladorSensores {
      * POST /simulador/eventos {"regiaoId": 1, "tipo": "ALAGAMENTO"}
      */
     public Evento disparar(Long regiaoId, TipoRisco tipo) {
+        return disparar(regiaoId, tipo, null);
+    }
+
+    public Evento disparar(Long regiaoId, TipoRisco tipo, String modo) {
+        boolean gradual = "GRADUAL".equalsIgnoreCase(modo) && tipo == TipoRisco.ALAGAMENTO;
         if (regiaoId == null || tipo == null) {
             throw new DadosInvalidosException("Informe regiaoId e tipo.");
         }
@@ -146,12 +161,20 @@ public class SimuladorSensores {
         }
 
         switch (tipo) {
-            case ALAGAMENTO -> nivelAgua.put(sensor.getId(), aleatorio(84, 95));
+            case ALAGAMENTO -> {
+                if (gradual) {
+                    // começa um pouco acima do limite BAIXA e sobe por ~30 ciclos (7,5 min)
+                    nivelAgua.put(sensor.getId(), Math.max(nivelAgua.getOrDefault(sensor.getId(), 0.0), 16.0));
+                    ciclosSubidaGradual.put(sensor.getId(), 30);
+                } else {
+                    nivelAgua.put(sensor.getId(), aleatorio(84, 95));
+                }
+            }
             case ILHA_DE_CALOR -> ciclosOndaDeCalor.put(sensor.getId(), 40);   // ~10 min
             case INTERRUPCAO_SERVICO -> ciclosSemEnergia.put(sensor.getId(), 40);
         }
 
-        if (tipo == TipoRisco.ALAGAMENTO) {
+        if (tipo == TipoRisco.ALAGAMENTO && !gradual) {
             // Gera a leitura com o valor forçado (sem aplicar a "descida" do próximo ciclo)
             leituraService.registrar(sensor.getRegiao(), sensor, Origem.SENSOR, grandeza,
                     nivelAgua.get(sensor.getId()), LeituraService.nomeFonte(sensor));

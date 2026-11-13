@@ -12,7 +12,7 @@ import com.fiap.ec.urban_risk.service.SimuladorSensores;
 
 /**
  * Apenas para DEMONSTRAÇÃO: força um cenário crítico nos sensores simulados.
- * Body: {"regiaoId": 1, "tipo": "ALAGAMENTO" | "ILHA_DE_CALOR" | "INTERRUPCAO_SERVICO"}
+ * Body: {"regiaoId": 1, "tipo": "ALAGAMENTO" | "ILHA_DE_CALOR" | "INTERRUPCAO_SERVICO", "modo": "IMEDIATO" | "GRADUAL"}
  */
 @RestController
 @RequestMapping("/simulador")
@@ -27,6 +27,6 @@ public class SimuladorController {
 
     @PostMapping("/eventos")
     public Evento disparar(@RequestBody SimulacaoRequest req) {
-        return simulador.disparar(req.regiaoId(), req.tipo());
+        return simulador.disparar(req.regiaoId(), req.tipo(), req.modo());
     }
 }

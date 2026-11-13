@@ -26,6 +26,7 @@ export default function PerfilScreen({ navigation }: Props) {
   const [regioes, setRegioes] = useState<Regiao[]>([]);
   const [regiaoSim, setRegiaoSim] = useState<number | null>(null);
   const [tipoSim, setTipoSim] = useState<TipoRisco>("ALAGAMENTO");
+  const [modoSim, setModoSim] = useState<"IMEDIATO" | "GRADUAL">("IMEDIATO");
   const [simulando, setSimulando] = useState(false);
   const [mensagem, setMensagem] = useState<{ tipo: "erro" | "sucesso"; texto: string } | null>(null);
 
@@ -43,10 +44,13 @@ export default function PerfilScreen({ navigation }: Props) {
     setSimulando(true);
     setMensagem(null);
     try {
-      const evento = await simularEvento(regiaoSim, tipoSim);
+      const gradual = tipoSim === "ALAGAMENTO" && modoSim === "GRADUAL";
+      const evento = await simularEvento(regiaoSim, tipoSim, gradual ? "GRADUAL" : "IMEDIATO");
       setMensagem({
         tipo: "sucesso",
-        texto: `${evento.fonte} disparou "${evento.titulo}". A notificação chega em até 15 segundos.`,
+        texto: gradual
+          ? `${evento.fonte}: a água começou a subir. Em ~1 min a análise de tendência mostra a previsão, e o alerta preditivo é enviado antes de ficar grave.`
+          : `${evento.fonte} disparou "${evento.titulo}". A notificação chega em até 15 segundos.`,
       });
     } catch (e) {
       setMensagem({ tipo: "erro", texto: mensagemErroApi(e, "Não foi possível simular o evento.") });
@@ -113,6 +117,20 @@ export default function PerfilScreen({ navigation }: Props) {
             { valor: "INTERRUPCAO_SERVICO", rotulo: "Queda de energia", icone: "flash-off" },
           ]}
         />
+        {tipoSim === "ALAGAMENTO" && (
+          <>
+            <Text style={styles.rotulo}>Como a água sobe</Text>
+            <Seletor<"IMEDIATO" | "GRADUAL">
+              rotuloGrupo="Modo da simulação"
+              selecionado={modoSim}
+              onSelecionar={setModoSim}
+              opcoes={[
+                { valor: "IMEDIATO", rotulo: "De uma vez (crítico)" },
+                { valor: "GRADUAL", rotulo: "Aos poucos (tendência)", icone: "trending-up" },
+              ]}
+            />
+          </>
+        )}
         {mensagem && <Mensagem tipo={mensagem.tipo} texto={mensagem.texto} />}
         <Botao titulo="Simular evento" icone="flask" onPress={handleSimular} carregando={simulando} desabilitado={!regiaoSim} />
         <Botao titulo="Ver alertas" icone="list" variante="secundario" onPress={() => navigation.navigate("Alertas")} />

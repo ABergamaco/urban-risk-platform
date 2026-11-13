@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Evento } from "../interfaces/evento";
 import { alertaCardStyles as styles } from "../styles/componentes.styles";
 import { cores, coresNivel } from "../styles/theme";
-import { iconeTipo, rotuloSeveridade, tempoRelativo } from "../utils/formatadores";
+import { iconeTipo, rotuloSeveridade, tempoRelativo, tendenciaInfo } from "../utils/formatadores";
 import BadgeNivel from "./BadgeNivel";
 import BarraConfianca from "./BarraConfianca";
 import ChipOrigem from "./ChipOrigem";
@@ -19,6 +19,7 @@ type Props = {
 /** Card de alerta: nível, título, região, origem, confiança e selos. */
 export default function AlertaCard({ evento, onPress, children }: Props) {
   const cor = coresNivel[evento.nivelAlerta] ?? coresNivel.INFORMATIVO;
+  const tend = evento.tendencia ? tendenciaInfo[evento.tendencia] : undefined;
   return (
     <Pressable
       onPress={onPress}
@@ -45,6 +46,20 @@ export default function AlertaCard({ evento, onPress, children }: Props) {
         </Text>
 
         <ChipOrigem origem={evento.origem} fonte={evento.fonte} />
+
+        {tend && (
+          <View
+            style={[styles.tendencia, { borderColor: tend.cor }]}
+            accessible
+            accessibilityLabel={`Tendência: ${tend.rotulo}. ${evento.previsaoTexto ?? ""}`}
+          >
+            <Ionicons name={tend.icone} size={18} color={tend.cor} />
+            <Text style={[styles.tendenciaTexto, { color: tend.cor }]} numberOfLines={2}>
+              {tend.rotulo}
+              {evento.previsaoTexto ? ` · ${evento.previsaoTexto}` : ""}
+            </Text>
+          </View>
+        )}
         <BarraConfianca confianca={evento.confianca} nivel={evento.nivelConfianca} />
 
         <View style={styles.selos}>

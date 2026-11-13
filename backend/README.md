@@ -132,6 +132,7 @@ Exemplo: um morador relata alagamento na Sé (35%). O sensor de nível da Sé ta
 
 ```
 prioridade = gravidade (até 50) + confiança × 0,35 (até 35) + recência (até 15, cai a zero em 6 h)
+           + tendência (−5 a +10, ver 5.4)          → resultado limitado entre 0 e 100
 ```
 
 | Prioridade | Nível do alerta |
@@ -143,7 +144,35 @@ prioridade = gravidade (até 50) + confiança × 0,35 (até 35) + recência (at�
 
 `GET /alertas` devolve sempre do **mais para o menos prioritário**.
 
-### 5.4 Qualidade dos alertas (evitar alarme falso)
+### 5.4 Análise de tendência: recurso de análise para a priorização
+
+Arquivos: `service/AnaliseTendencia.java` (cálculo puro, testado em `AnaliseTendenciaTest`) e `service/TendenciaService.java`.
+
+A cada leitura de sensor (nível da água ou temperatura), o backend faz uma **regressão linear (mínimos quadrados)** com as **últimas 12 leituras** (≈ 3 min). Ela responde três perguntas:
+
+| Pergunta | Como é calculado |
+|---|---|
+| O risco está **subindo, estável ou descendo**? | Inclinação da reta (cm/min ou °C/min) |
+| É tendência real ou ruído? | Coeficiente **R²**: abaixo de 0,3 é tratado como ESTÁVEL |
+| Em quanto tempo atinge o **próximo nível**? | (limite − valor atual) ÷ taxa |
+
+Efeito na prioridade:
+
+| Situação | Ajuste |
+|---|---|
+| Subindo e chega ao próximo nível em até 15 min | **+10** |
+| Subindo e chega em até 60 min | +6 |
+| Subindo mais devagar | +3 |
+| Descendo (melhorando) | −5 |
+| Estável | 0 |
+
+A análise é aplicada a **todos** os alertas ativos daquela região e tipo, inclusive aos relatos de moradores.
+
+**Alerta preditivo:** se a previsão indica que o próximo nível chega em até 15 min, o alerta é notificado **uma vez, antes de piorar**.
+
+Para demonstrar: `POST /simulador/eventos` com `"modo": "GRADUAL"` faz a água subir ~12 cm/min. Consulte o resultado em `GET /analise/tendencias` ou no detalhe do alerta, no app.
+
+### 5.5 Qualidade dos alertas (evitar alarme falso)
 
 - **Agrupamento:** um relato igual (mesmo tipo e região, nas últimas 3 h) vira **confirmação** do relato existente, e não um alerta duplicado.
 - **Notificação:** só notifica alerta **LARANJA ou VERMELHO** com confiança **pelo menos MÉDIA**. Um relato isolado aparece na lista, mas não dispara notificação para toda a cidade.
@@ -173,7 +202,8 @@ prioridade = gravidade (até 50) + confiança × 0,35 (até 35) + recência (at�
 | GET | `/regioes` · `/regioes/{id}` | Regiões monitoradas |
 | POST | `/usuarios` | Cadastro (perfil `AGENTE` exige `codigoAgente`, que na demonstração é `DEFESA2026`) |
 | POST | `/usuarios/login` | `{"email":"...","senha":"..."}` |
-| POST | `/simulador/eventos` | **Demonstração:** `{"regiaoId":1,"tipo":"ALAGAMENTO"}` força um cenário crítico |
+| GET | `/analise/tendencias` | Resultado atual da análise de tendência (regressão linear) por região |
+| POST | `/simulador/eventos` | **Demonstração:** `{"regiaoId":1,"tipo":"ALAGAMENTO","modo":"IMEDIATO"\|"GRADUAL"}` |
 
 Exemplos prontos para testar estão em **`api-exemplos.http`** (extensão REST Client do VS Code ou IntelliJ).
 

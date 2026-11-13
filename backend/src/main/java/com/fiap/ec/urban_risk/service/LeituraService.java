@@ -30,13 +30,16 @@ public class LeituraService {
     private final LeituraRepository leituraRepository;
     private final SensorRepository sensorRepository;
     private final EventoService eventoService;
+    private final TendenciaService tendenciaService;
 
     public LeituraService(LeituraRepository leituraRepository,
                           SensorRepository sensorRepository,
-                          EventoService eventoService) {
+                          EventoService eventoService,
+                          TendenciaService tendenciaService) {
         this.leituraRepository = leituraRepository;
         this.sensorRepository = sensorRepository;
         this.eventoService = eventoService;
+        this.tendenciaService = tendenciaService;
     }
 
     /** Entrada para sensores REAIS: POST /leituras {"codigoSensor": "...", "valor": 0.0} */
@@ -68,6 +71,10 @@ public class LeituraService {
             sensorRepository.save(sensor);
         }
         avaliar(leitura);
+        if (sensor != null) {
+            // Análise de tendência (regressão linear) sobre as últimas leituras deste sensor
+            tendenciaService.atualizar(regiao, grandeza);
+        }
         return leitura;
     }
 

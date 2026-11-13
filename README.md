@@ -59,6 +59,7 @@ npm run web                     # abre no navegador (http://localhost:8081)
 | Receber e organizar dados de sensores, bases públicas e registros comunitários | `backend`: `SimuladorSensores`, `POST /leituras`, `OpenMeteoService`, `POST /relatos` |
 | Persistir os dados | Spring Data JPA + H2 (`backend/src/main/java/.../model` e `repository`) |
 | API REST que prioriza alertas | `GET /alertas`, ordenado por prioridade (`CalculoRisco`) |
+| Recurso de IA/análise para apoiar a priorização | **Análise de tendência por regressão linear** (`AnaliseTendencia`): prevê quando o próximo nível de risco será atingido, ajusta a prioridade e emite **alerta preditivo** |
 | Origem e nível de confiança de cada dado | Campos `origem`, `fonte`, `confianca` e `nivelConfianca` em todo alerta |
 | Painel de acompanhamento | App: aba **Painel** |
 | Lista ou mapa de eventos | App: abas **Alertas** (lista) e **Mapa** |

@@ -21,4 +21,6 @@ export const detalheStyles = StyleSheet.create({
   barra: { flex: 1, borderTopLeftRadius: 3, borderTopRightRadius: 3, minHeight: 3 },
   graficoLegenda: { flexDirection: "row", justifyContent: "space-between" },
   acoes: { gap: 10 },
+  tendenciaBox: { backgroundColor: cores.fundo, borderRadius: 10, padding: 12, gap: 4, marginBottom: 6 },
+  tendenciaTitulo: { fontSize: fonte.normal, fontWeight: "bold" },
 });

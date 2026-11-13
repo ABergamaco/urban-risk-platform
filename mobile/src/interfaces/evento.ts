@@ -39,4 +39,12 @@ export interface Evento {
   escaladoEm: string;
   encerradoEm?: string | null;
   observacaoAgente?: string | null;
+
+  // Análise de tendência (regressão linear no backend)
+  tendencia?: "SUBINDO" | "ESTAVEL" | "DESCENDO" | "SEM_DADOS" | null;
+  taxaVariacao?: number | null; // por minuto
+  previsaoMinutos?: number | null; // minutos até o próximo nível
+  previsaoTexto?: string | null;
+  ajusteTendencia?: number | null; // pontos somados à prioridade (-5 a +10)
+  alertaPreditivo?: boolean | null;
 }

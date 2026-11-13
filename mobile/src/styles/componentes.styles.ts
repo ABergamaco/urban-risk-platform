@@ -84,6 +84,11 @@ export const alertaCardStyles = StyleSheet.create({
   titulo: { fontSize: fonte.media, fontWeight: "bold", color: cores.texto, flex: 1 },
   info: { fontSize: fonte.pequena, color: cores.textoSecundario },
   selos: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  tendencia: {
+    flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", maxWidth: "100%",
+    borderWidth: 1.5, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: "#FFFFFF",
+  },
+  tendenciaTexto: { fontSize: 13, fontWeight: "bold", flexShrink: 1 },
   seloOk: {
     flexDirection: "row", alignItems: "center", gap: 4,
     backgroundColor: "#E8F5E9", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,

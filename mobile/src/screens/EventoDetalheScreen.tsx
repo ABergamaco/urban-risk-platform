@@ -8,7 +8,7 @@ import { Evento } from "../interfaces/evento";
 import { Leitura } from "../interfaces/leitura";
 import { buscarEvento, buscarLeiturasDoEvento, resolverEvento, validarEvento } from "../services/eventoService";
 import { mensagemErroApi } from "../utils/apiErro";
-import { dataHora, numero, rotuloSeveridade, rotuloNivel, tempoRelativo } from "../utils/formatadores";
+import { dataHora, lerData, numero, rotuloSeveridade, rotuloNivel, tempoRelativo, tendenciaInfo } from "../utils/formatadores";
 import { BadgeNivel, BarraConfianca, Botao, Campo, ChipOrigem, EstadoTela, Mensagem } from "../components";
 import { detalheStyles as styles } from "../styles/detalhe.styles";
 import { coresNivel } from "../styles/theme";
@@ -35,6 +35,18 @@ const ORIENTACOES: Record<string, string[]> = {
 };
 
 const BASE_ORIGEM: Record<string, number> = { SENSOR: 80, BASE_PUBLICA: 85, COMUNIDADE: 35 };
+const PESO: Record<string, number> = { BAIXA: 1, MODERADA: 2, ALTA: 3, CRITICA: 4 };
+
+/** Mesma fórmula do backend (CalculoRisco.prioridade), só para mostrar as parcelas. */
+function parcelasPrioridade(e: Evento) {
+  const minutos = Math.max(0, (Date.now() - lerData(e.escaladoEm).getTime()) / 60000);
+  return {
+    gravidade: (PESO[e.severidade] / 4) * 50,
+    confianca: e.confianca * 0.35,
+    recencia: 15 * (1 - Math.min(minutos, 360) / 360),
+    tendencia: e.ajusteTendencia ?? 0,
+  };
+}
 
 export default function EventoDetalheScreen({ route }: Props) {
   const { eventoId } = route.params;
@@ -123,6 +135,38 @@ export default function EventoDetalheScreen({ route }: Props) {
         {evento.validadoPorAgente && <LinhaCalculo texto="Validado por agente local" valor="+40" />}
         {evento.desatualizado && <LinhaCalculo texto="Sensor sem dados recentes" valor="-25" />}
         <LinhaCalculo texto="Resultado (limitado entre 5 e 99)" valor={`${evento.confianca}%`} />
+      </View>
+
+      {/* Análise de tendência + composição da prioridade */}
+      <View style={styles.cartao}>
+        <Text style={styles.cartaoTitulo}>Por que esta prioridade</Text>
+        {evento.tendencia && tendenciaInfo[evento.tendencia] && (
+          <View style={styles.tendenciaBox}>
+            <Text style={[styles.tendenciaTitulo, { color: tendenciaInfo[evento.tendencia].cor }]}>
+              Tendência: {tendenciaInfo[evento.tendencia].rotulo}
+            </Text>
+            {evento.previsaoTexto && <Text style={styles.texto}>{evento.previsaoTexto}.</Text>}
+            <Text style={styles.textoSec}>
+              Análise de tendência: regressão linear sobre as últimas leituras do sensor da região.
+              Riscos piorando ganham até +10 pontos de prioridade; riscos melhorando perdem 5.
+            </Text>
+          </View>
+        )}
+        {(() => {
+          const p = parcelasPrioridade(evento);
+          return (
+            <>
+              <LinhaCalculo texto={`Gravidade (${rotuloSeveridade[evento.severidade]})`} valor={`+${numero(p.gravidade)}`} />
+              <LinhaCalculo texto={`Confiança (${evento.confianca}% × 0,35)`} valor={`+${numero(p.confianca)}`} />
+              <LinhaCalculo texto="Recência (cai até zero em 6 h)" valor={`+${numero(p.recencia)}`} />
+              <LinhaCalculo
+                texto="Tendência (análise preditiva)"
+                valor={`${p.tendencia >= 0 ? "+" : ""}${p.tendencia}`}
+              />
+              <LinhaCalculo texto="Prioridade (0 a 100)" valor={numero(evento.prioridade)} />
+            </>
+          );
+        })()}
       </View>
 
       {/* Dados do evento */}

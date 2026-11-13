@@ -18,6 +18,9 @@ public interface LeituraRepository extends JpaRepository<Leitura, Long> {
 
     List<Leitura> findByRegiaoIdAndGrandezaOrderByDataHoraDesc(Long regiaoId, Grandeza grandeza, Pageable pageable);
 
+    List<Leitura> findByRegiaoIdAndGrandezaAndOrigemOrderByDataHoraDesc(
+            Long regiaoId, Grandeza grandeza, Origem origem, Pageable pageable);
+
     List<Leitura> findByRegiaoIdOrderByDataHoraDesc(Long regiaoId, Pageable pageable);
 
     List<Leitura> findAllByOrderByDataHoraDesc(Pageable pageable);

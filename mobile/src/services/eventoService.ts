@@ -36,7 +36,11 @@ export async function resolverEvento(eventoId: number, usuarioId: number, observ
 }
 
 /** Demonstração: força um cenário crítico nos sensores simulados. */
-export async function simularEvento(regiaoId: number, tipo: TipoRisco): Promise<Evento> {
-  const response = await api.post<Evento>("/simulador/eventos", { regiaoId, tipo });
+export async function simularEvento(
+  regiaoId: number,
+  tipo: TipoRisco,
+  modo: "IMEDIATO" | "GRADUAL" = "IMEDIATO"
+): Promise<Evento> {
+  const response = await api.post<Evento>("/simulador/eventos", { regiaoId, tipo, modo });
   return response.data;
 }
