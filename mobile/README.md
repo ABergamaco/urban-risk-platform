@@ -111,7 +111,20 @@ O `react-native-maps` não funciona na web. Por isso existem dois arquivos com o
 
 O Metro escolhe o arquivo certo sozinho, e o resto do app importa só `MapaScreen`. Os dados vêm do mesmo hook, `hooks/useDadosMapa.ts`.
 
-## 8. Estrutura do projeto
+## 8. Testes
+
+```bash
+npm test
+```
+
+Testes com **Jest** (`jest-expo`) em `src/__tests__/`:
+
+- formatação de datas e números;
+- posição dos marcadores no mapa;
+- cálculo das parcelas da prioridade (mesma fórmula do backend);
+- tratamento das mensagens de erro da API.
+
+## 9. Estrutura do projeto
 
 Segue o padrão usado nas aulas:
 
@@ -126,10 +139,11 @@ src/
   context/                   → SessaoContext (usuário logado)
   interfaces/ e types/       → tipagem TypeScript dos dados da API
   styles/                    → StyleSheets separados da lógica + theme.ts
-  utils/                     → formatação, erros da API, helpers do mapa
+  utils/                     → formatação, erros da API, prioridade, helpers do mapa
+  __tests__/                 → testes Jest
 ```
 
-## 9. Roteiro de demonstração
+## 10. Roteiro de demonstração
 
 1. Entre como `morador@demo.com`. O painel mostra o alerta vermelho do **Jardim Pantanal** (sensor de nível da água).
 2. Vá em **Perfil → Modo demonstração**, escolha *Sé + Alagamento* e toque em **Simular evento**. Em até 15 s chegam o **banner** e a **notificação**.

@@ -9,7 +9,8 @@ import { Evento } from "../interfaces/evento";
 import { Leitura } from "../interfaces/leitura";
 import { buscarEvento, buscarLeiturasDoEvento, resolverEvento, validarEvento } from "../services/eventoService";
 import { mensagemErroApi } from "../utils/apiErro";
-import { dataHora, lerData, numero, rotuloSeveridade, rotuloNivel, tempoRelativo, tendenciaInfo } from "../utils/formatadores";
+import { parcelasPrioridade } from "../utils/prioridade";
+import { dataHora, numero, rotuloSeveridade, rotuloNivel, tempoRelativo, tendenciaInfo } from "../utils/formatadores";
 import { BadgeNivel, BarraConfianca, Botao, Campo, ChipOrigem, EstadoTela, Mensagem } from "../components";
 import { detalheStyles as styles } from "../styles/detalhe.styles";
 import { coresNivel } from "../styles/theme";
@@ -36,18 +37,6 @@ const ORIENTACOES: Record<string, string[]> = {
 };
 
 const BASE_ORIGEM: Record<string, number> = { SENSOR: 80, BASE_PUBLICA: 85, COMUNIDADE: 35 };
-const PESO: Record<string, number> = { BAIXA: 1, MODERADA: 2, ALTA: 3, CRITICA: 4 };
-
-/** Mesma fórmula do backend (CalculoRisco.prioridade), só para mostrar as parcelas. */
-function parcelasPrioridade(e: Evento) {
-  const minutos = Math.max(0, (Date.now() - lerData(e.escaladoEm).getTime()) / 60000);
-  return {
-    gravidade: (PESO[e.severidade] / 4) * 50,
-    confianca: e.confianca * 0.35,
-    recencia: 15 * (1 - Math.min(minutos, 360) / 360),
-    tendencia: e.ajusteTendencia ?? 0,
-  };
-}
 
 export default function EventoDetalheScreen({ route }: Props) {
   const { eventoId } = route.params;
