@@ -57,9 +57,24 @@ public class LeituraService {
     }
 
     /** Ponto único de entrada de qualquer leitura (sensor simulado, sensor real ou base pública). */
+    // Indicador "tempo de atualização": quanto tempo leva do dado chegar até o alerta estar pronto
+    private final java.util.concurrent.atomic.AtomicLong totalProcessamentoNanos = new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicLong leiturasProcessadas = new java.util.concurrent.atomic.AtomicLong();
+
+    /** Tempo médio (ms) entre receber uma leitura e o alerta correspondente estar atualizado. */
+    public double tempoMedioProcessamentoMs() {
+        long n = leiturasProcessadas.get();
+        return n == 0 ? 0 : (totalProcessamentoNanos.get() / 1_000_000.0) / n;
+    }
+
+    public long totalLeiturasProcessadas() {
+        return leiturasProcessadas.get();
+    }
+
     @Transactional
     public Leitura registrar(Regiao regiao, Sensor sensor, Origem origem, Grandeza grandeza,
                              double valor, String fonte) {
+        long inicio = System.nanoTime();
         LocalDateTime agora = LocalDateTime.now();
         double valorArredondado = Math.round(valor * 10.0) / 10.0;
         Leitura leitura = leituraRepository.save(
@@ -75,6 +90,8 @@ public class LeituraService {
             // Análise de tendência (regressão linear) sobre as últimas leituras deste sensor
             tendenciaService.atualizar(regiao, grandeza);
         }
+        totalProcessamentoNanos.addAndGet(System.nanoTime() - inicio);
+        leiturasProcessadas.incrementAndGet();
         return leitura;
     }
 

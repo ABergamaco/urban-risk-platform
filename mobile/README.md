@@ -48,7 +48,7 @@ Endereço do backend em `src/services/api.ts`:
 | Requisito do enunciado | Como está no app |
 |---|---|
 | Consumir a API REST | `src/services/*.ts` com **axios**. Uma função por endpoint. |
-| **Painel de acompanhamento** | Aba **Painel**: alerta mais importante, "Meu bairro", totais por tipo e por nível, situação de cada região (temperatura, chuva, nível da água) e **status das fontes de dados**. Atualiza sozinho a cada 20 s. |
+| **Painel de acompanhamento** | Aba **Painel**: alerta mais importante, "Meu bairro", totais por tipo e por nível, situação de cada região (temperatura, chuva, nível da água), **indicadores** (tempo de atualização, qualidade dos alertas, facilidade de uso) e **status das fontes de dados**. Atualiza sozinho a cada 20 s. |
 | **Lista ou mapa de eventos** | Os dois. Aba **Alertas** (lista com filtros por tipo, confiança e bairro) e aba **Mapa** (pontos coloridos por nível e áreas das regiões). |
 | **Alertas priorizados** | A lista segue a ordem de prioridade calculada pela API. Cada card mostra o nível (vermelho/laranja/amarelo/informativo) e a prioridade de 0 a 100. |
 | **Análise para priorização** | Cada alerta mostra a **tendência** (piorando, estável ou melhorando) e a previsão ("deve atingir nível ALTA em ~4 min"), calculadas pelo backend com regressão linear. O detalhe mostra **por que o alerta tem aquela prioridade**, parcela por parcela. |

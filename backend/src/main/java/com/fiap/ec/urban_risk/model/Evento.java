@@ -98,6 +98,9 @@ public class Evento {
 
     private String observacaoAgente;
 
+    /** Quando um agente validou (para o indicador de tempo de resposta). */
+    private LocalDateTime validadoEm;
+
     // ===== Análise de tendência (preenchido pelo TendenciaService) =====
     /** SUBINDO | ESTAVEL | DESCENDO | SEM_DADOS (null = sem sensor na região) */
     private String tendencia;
@@ -193,6 +196,7 @@ public class Evento {
     public LocalDateTime getEscaladoEm() { return escaladoEm; }
     public LocalDateTime getEncerradoEm() { return encerradoEm; }
     public String getObservacaoAgente() { return observacaoAgente; }
+    public LocalDateTime getValidadoEm() { return validadoEm; }
     public Integer getPesoMaximo() { return pesoMaximo; }
     public String getTendencia() { return tendencia; }
     public Double getTaxaVariacao() { return taxaVariacao; }
@@ -223,6 +227,7 @@ public class Evento {
     public void setEscaladoEm(LocalDateTime escaladoEm) { this.escaladoEm = escaladoEm; }
     public void setEncerradoEm(LocalDateTime encerradoEm) { this.encerradoEm = encerradoEm; }
     public void setObservacaoAgente(String observacaoAgente) { this.observacaoAgente = observacaoAgente; }
+    public void setValidadoEm(LocalDateTime validadoEm) { this.validadoEm = validadoEm; }
     public void setPesoMaximo(Integer pesoMaximo) { this.pesoMaximo = pesoMaximo; }
     public void setTendencia(String tendencia) { this.tendencia = tendencia; }
     public void setTaxaVariacao(Double taxaVariacao) { this.taxaVariacao = taxaVariacao; }

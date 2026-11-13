@@ -7,12 +7,14 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { RootStackParamList, TabParamList } from "../../navigation/types";
 import { useSessao } from "../../context/SessaoContext";
-import { useRecarregarAoReconectar } from "../../context/ConexaoContext";
+import { useConexao, useRecarregarAoReconectar } from "../../context/ConexaoContext";
+import { Indicadores } from "../../interfaces/indicadores";
+import { buscarIndicadores } from "../../services/indicadoresService";
 import { Painel, FonteStatus, RegiaoResumo } from "../../interfaces/painel";
 import { buscarPainel } from "../../services/painelService";
 import { mensagemErroApi } from "../../utils/apiErro";
 import { iconeOrigem, numero, rotuloNivel, tempoRelativo } from "../../utils/formatadores";
-import { BadgeNivel, EstadoTela } from "../../components";
+import { BadgeNivel, CardIndicadores, EstadoTela } from "../../components";
 import { painelStyles as styles } from "../../styles/painel.styles";
 import { cores, coresNivel } from "../../styles/theme";
 import { TipoRisco } from "../../types/tipoRisco";
@@ -40,7 +42,9 @@ const ROTULO_STATUS: Record<string, string> = {
 /** Painel de acompanhamento: visão geral da cidade, atualizada sozinha a cada 20 s. */
 export default function PainelScreen({ navigation }: Props) {
   const { usuario } = useSessao();
+  const { latenciaMs } = useConexao();
   const [painel, setPainel] = useState<Painel | null>(null);
+  const [indicadores, setIndicadores] = useState<Indicadores | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -50,6 +54,7 @@ export default function PainelScreen({ navigation }: Props) {
       const dados = await buscarPainel();
       setPainel(dados);
       setErro(null);
+      buscarIndicadores().then(setIndicadores).catch(() => {}); // opcional: não bloqueia o painel
     } catch (e) {
       setErro(mensagemErroApi(e, "Não foi possível carregar o painel."));
     } finally {
@@ -165,6 +170,14 @@ export default function PainelScreen({ navigation }: Props) {
           <CardRegiao key={r.id} regiao={r} onPress={() => navigation.navigate("Mapa")} />
         ))}
       </View>
+
+      {/* Indicadores do enunciado */}
+      {indicadores && (
+        <View>
+          <Text style={styles.secaoTitulo}>Indicadores</Text>
+          <CardIndicadores dados={indicadores} latenciaMs={latenciaMs} />
+        </View>
+      )}
 
       {/* Fontes de dados */}
       <View>

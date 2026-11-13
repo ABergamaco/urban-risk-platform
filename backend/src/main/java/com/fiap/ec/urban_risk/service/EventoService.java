@@ -247,6 +247,7 @@ public class EventoService {
     private Evento validarComoAgente(Evento evento, TipoValidacao tipo) {
         if (tipo == TipoValidacao.CONFIRMAR) {
             evento.setValidadoPorAgente(true);
+            evento.setValidadoEm(LocalDateTime.now());
             evento.setObservacaoAgente("Confirmado por agente local.");
             evento.setAtualizadoEm(LocalDateTime.now());
             evento.setEscaladoEm(LocalDateTime.now()); // confiança subiu muito: avisa os moradores

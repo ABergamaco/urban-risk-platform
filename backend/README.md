@@ -202,6 +202,7 @@ Para demonstrar: `POST /simulador/eventos` com `"modo": "GRADUAL"` faz a água s
 | GET | `/regioes` · `/regioes/{id}` | Regiões monitoradas |
 | POST | `/usuarios` | Cadastro (perfil `AGENTE` exige `codigoAgente`, que na demonstração é `DEFESA2026`) |
 | POST | `/usuarios/login` | `{"email":"...","senha":"..."}` |
+| GET | `/indicadores` | **Indicadores:** tempo de atualização (idade de cada fonte, processamento médio, tempo máximo até o app) e qualidade dos alertas (confiança média, % corroborados, falsos alarmes, relatos agrupados, alertas preditivos) |
 | GET | `/analise/tendencias` | Resultado atual da análise de tendência (regressão linear) por região |
 | POST | `/simulador/eventos` | **Demonstração:** `{"regiaoId":1,"tipo":"ALAGAMENTO","modo":"IMEDIATO"\|"GRADUAL"}` |
 
@@ -209,14 +210,22 @@ Exemplos prontos para testar estão em **`api-exemplos.http`** (extensão REST C
 
 Erros sempre vêm como `{"erro": "mensagem"}`, com os códigos 400, 403, 404 ou 409.
 
-## 7. Proteção de dados pessoais (LGPD)
+## 7. Indicadores (`GET /indicadores`)
+
+| Indicador | O que é medido |
+|---|---|
+| **Tempo de atualização** | Intervalo e idade do último dado de cada fonte; tempo médio de processamento de uma leitura (medido no `LeituraService`); **tempo máximo do sensor até o app** (ciclo do sensor + processamento + ciclo de 15 s do app) |
+| **Qualidade dos alertas** | Confiança média e % com confiança alta; % de alertas confirmados por outra fonte; validados por agente; falsos alarmes descartados e taxa; relatos repetidos agrupados; alertas com análise de tendência e alertas preditivos; tempo médio até a validação |
+| **Facilidade de uso** | Medida no app (veja `mobile/README.md`): relato em 4 passos, 1 toque para ver um alerta, contraste AA, funciona sem conexão |
+
+## 8. Proteção de dados pessoais (LGPD)
 
 - O autor do relato **nunca** aparece na API. Publicamente, o relato é "Relato de morador (anônimo)".
 - A localização do relato é **arredondada para ~100 m**, para não expor o endereço de quem relatou.
 - A senha é guardada só como **hash SHA-256 com salt aleatório** e nunca sai no JSON (`@JsonIgnore`).
 - Quem confirmou ou contestou um alerta também não é exposto. O registro só existe para impedir voto repetido.
 
-## 8. Disponibilidade, escalabilidade e tempo de atualização
+## 9. Disponibilidade, escalabilidade e tempo de atualização
 
 - **Tolerância a falhas:** se a Open-Meteo cair, o sistema segue com sensores e relatos, e o painel mostra a fonte como OFFLINE.
 - **Dado desatualizado:** um alerta de sensor sem dados há mais de 10 min fica marcado e perde confiança.
@@ -225,7 +234,7 @@ Erros sempre vêm como `{"erro": "mensagem"}`, com os códigos 400, 403, 404 ou 
 - **Sensor real:** qualquer dispositivo (ESP32, Arduino com Wi-Fi) pode enviar leituras por `POST /leituras`. Basta cadastrar o código do sensor.
 - Tudo é configurável em `application.properties`: intervalos, limites e retenção.
 
-## 9. Roteiro de demonstração
+## 10. Roteiro de demonstração
 
 1. Suba o backend e o app.
 2. Entre no app como `morador@demo.com`. O painel mostra o **alerta vermelho no Jardim Pantanal**, vindo do sensor que já começa alagado.

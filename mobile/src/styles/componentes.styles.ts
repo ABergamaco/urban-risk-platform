@@ -184,3 +184,15 @@ export const faixaStyles = StyleSheet.create({
   botao: { minHeight: 44, paddingHorizontal: 14, borderRadius: 10, borderWidth: 2, borderColor: "#FFFFFF", justifyContent: "center" },
   botaoTexto: { color: "#FFFFFF", fontWeight: "bold", fontSize: fonte.pequena },
 });
+
+export const indicadoresStyles = StyleSheet.create({
+  grade: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  cartao: { flexGrow: 1, flexBasis: 260, backgroundColor: cores.superficie, borderRadius: 14, padding: 14, gap: 4 },
+  topo: { flexDirection: "row", alignItems: "center", gap: 8 },
+  titulo: { fontSize: fonte.normal, fontWeight: "bold", color: cores.texto },
+  destaque: { fontSize: 28, fontWeight: "bold", color: cores.primaria, marginTop: 4 },
+  legenda: { fontSize: 13, color: cores.textoSecundario, marginBottom: 6 },
+  linha: { flexDirection: "row", justifyContent: "space-between", gap: 8, paddingVertical: 3, borderTopWidth: 1, borderTopColor: "#EEE" },
+  linhaRotulo: { fontSize: 13, color: cores.texto, flexShrink: 1 },
+  linhaValor: { fontSize: 13, color: cores.texto, fontWeight: "bold", textAlign: "right" },
+});

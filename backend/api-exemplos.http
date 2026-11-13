@@ -7,6 +7,9 @@ GET {{base}}/health
 ### Painel de acompanhamento
 GET {{base}}/painel
 
+### Indicadores (tempo de atualização e qualidade dos alertas)
+GET {{base}}/indicadores
+
 ### Status das fontes de dados
 GET {{base}}/fontes
 

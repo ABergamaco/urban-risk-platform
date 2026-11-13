@@ -16,4 +16,6 @@ public interface RelatoRepository extends JpaRepository<Relato, Long> {
     long countByEventoId(Long eventoId);
 
     Optional<Relato> findFirstByOrderByCriadoEmDesc();
+
+    long countByCriadoEmAfter(java.time.LocalDateTime desde);
 }

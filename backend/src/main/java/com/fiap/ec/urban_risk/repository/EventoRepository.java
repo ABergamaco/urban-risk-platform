@@ -29,4 +29,6 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
             StatusEvento status, Origem origem);
 
     List<Evento> findAllByOrderByAtualizadoEmDesc();
+
+    List<Evento> findByCriadoEmAfter(LocalDateTime desde);
 }
