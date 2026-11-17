@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Urban Risk Intelligence Platform - Backend
  *
+ * Autores: Arthur Bergamaço Alves e Leonardo Medeiros da Silva
+ *
  * @EnableScheduling liga as tarefas automáticas (@Scheduled):
  * - SimuladorSensores: gera leituras dos sensores simulados
  * - OpenMeteoService: busca dados reais de clima (base pública)
