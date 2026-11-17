@@ -7,6 +7,8 @@
 | Arthur Bergamaço Alves | RM 556207 |
 | Leonardo Medeiros da Silva | RM 559220 |
 
+🎥 **Vídeo da apresentação:** [https://youtu.be/gUeWMVYSQuE](https://youtu.be/gUeWMVYSQuE)
+
 Plataforma integrada de **monitoramento e análise de riscos cotidianos em áreas urbanas**: alagamentos, ilhas de calor e interrupções de serviços essenciais. Ela é dividida em duas partes:
 
 - **Backend (Java + Spring Boot):** recebe dados de **sensores** (simulados ou reais), de uma **base pública** (Open-Meteo, com dados reais de clima) e de **relatos da comunidade**. Guarda tudo no banco e expõe uma **API REST que prioriza os alertas** e informa a **origem** e o **nível de confiança** de cada dado.
@@ -90,6 +92,8 @@ App React Native ──HTTP/JSON──► controller ──► service ──►
 - **App em camadas:** `screens` (telas) → `components` (UI reutilizável) → `services` (API com axios) + `context` (sessão e conexão) + `hooks`.
 
 ## Roteiro da apresentação
+
+> Vídeo gravado: [https://youtu.be/gUeWMVYSQuE](https://youtu.be/gUeWMVYSQuE)
 
 1. **API rodando:** abrir http://localhost:8080/alertas e mostrar os alertas ordenados por prioridade, com `origem` e `confianca`.
 2. **App recebendo dados em tempo real:** o Painel atualiza sozinho e os sensores mudam a cada 15 s. Em **Perfil → Modo demonstração**:
